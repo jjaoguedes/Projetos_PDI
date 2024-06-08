@@ -1,30 +1,29 @@
 import statistics
 from math import floor
-import numpy as np
 from Projetos_PDI.project5_joao_felix_caroline_braz.imagePad4e import imagePad4e
 
 def medianSFilter(f , w):
 
-    #dimensão da imagem
+    #image of the dimension
     M, N = f.shape[0], f.shape[1]
-    #tamanho da vizinhança
-    size_mask = (floor(w / 2))
+    #neighborhood of the distance pixels of the image border
+    size_mask = (floor((w) / 2))
     #replicamento de pad com a vizinhança
     pad = imagePad4e(f, size_mask, size_mask, 'replicate')
-    #criação de um novo array de zeros com a mesma forma e tipo de dados da imagem
-    filtered_image = np.zeros_like(f, dtype=np.float32)
+    #copy the image original for receive the pixel
+    image_filtered = f.copy()
     for rows in range(M):
         for columns in range(N):
             #posicionamento do pixel com a vizinhança
             pad_img = pad[rows:rows + w, columns:columns + w]
-            #transforma em um array unidimensional
+            #transform on a one-dimensional array
             img_uni = pad_img.ravel()
-            #converte para uma lista
+            #convert for a list
             List = list(img_uni)
-            #organiza os elementos da lista
+            #organize the elements of the list
             List.sort()
-            #calcula a mediana da lista
+            #calculate the median of the list
             median = statistics.median(List)
-            #resultado da mediana para o pixel
-            filtered_image[rows, columns] = median
-    return filtered_image
+            #result of the median for the pixel
+            image_filtered[rows, columns] = median
+    return image_filtered

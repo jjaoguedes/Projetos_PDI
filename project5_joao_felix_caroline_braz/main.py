@@ -4,45 +4,45 @@ from Projetos_PDI.project5_joao_felix_caroline_braz.medianSFilter import medianS
 from Projetos_PDI.project5_joao_felix_caroline_braz.twodSFilter import twodSFilter
 
 name_image = 'Fig3.37(a)'
-#abre a imagem usando PIL
+#open the image using module PIL
 f = Image.open(name_image + '.jpg')
 
-#obtém o DPI original da imagem
+#get the original DPI of the image
 dpi_original = f.info.get('dpi')
 
-#converte a imagem para escala de cinza
+#converts the image for gray scale
 f_gray = f.convert('L')
 
-#converte a imagem em escala de cinza para uma matriz Numpy
+#converts grayscale image to a Numpy matrix
 image_matrix = np.asarray(f_gray)
 
-#imagem original
+#copy image original
 image_matrix_original = image_matrix.copy()
 
-#transforma a matriz em um objeto de imagem
+#transforms the matrix to an image object
 img = Image.fromarray(image_matrix_original)
 img.show()
 
-#tamanho da vizinhança
+#the neighborhood size
 w = 3
 
-#Filtragem Linear - filtro de média
+#Linear Filtering - Mean filter
 g1 = twodSFilter(image_matrix_original, w)
-#transforma a matriz resultante de volta em um objeto de imagem
+#transforms the resulting array back into an image object
 img_filter_media = Image.fromarray(g1)
 img_filter_media.show()
-# define o DPI alvo como o valor original do DPI
+#sets the target DPI to the original DPI value
 dpi_target = dpi_original
-#salva a imagem resultante com a imagem filtrada da media
-img_filter_media.save(name_image + 'img_filter_media_' + str(w) + 'x' + str(w) + '.tif', optimize=False, dpi=dpi_target)
+#saves the resulting image with the mean-filtered image
+img_filter_media.save(name_image + '_img_filter_media_' + str(w) + 'x' + str(w) + '.jpg', optimize=False, dpi=dpi_target)
 
 if w == 3:
-    #Filtragem não Linear - filtro de mediana
+    #Non-Linear Filtering - Median Filter
     g2 = medianSFilter(image_matrix_original, w)
-    #transforma a matriz resultante de volta em um objeto de imagem
+    #transforms the resulting array back into an image object
     img_filter_median = Image.fromarray(g2)
     img_filter_median.show()
-    # define o DPI alvo como o valor original do DPI
+    #define the target DPI to the original DPI value
     dpi_target = dpi_original
-    # salva a imagem resultante com a imagem filtrada da mediana
-    img_filter_median.save(name_image + 'img_filter_median_' + str(w) + 'x' + str(w) + '.tif', optimize=False, dpi=dpi_target)
+    #saves the resulting image with the mean-filtered image
+    img_filter_median.save(name_image + '_img_filter_median_' + str(w) + 'x' + str(w) + '.jpg', optimize=False, dpi=dpi_target)
