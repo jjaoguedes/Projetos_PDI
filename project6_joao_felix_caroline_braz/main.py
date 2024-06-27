@@ -3,36 +3,36 @@ from PIL import Image
 
 def globalThresh(f, detT):
 
-    imagem_norm = f/255
-    T = np.mean(imagem_norm)
+    # Convertendo a imagem para uint8
+    image = f.astype(np.uint8)
 
-    # Inicializa as variáveis para as médias dos grupos
-    m1 = 0
-    m2 = 0
+    # Definindo o intervalo inicial para o limiar
+    min_valor = np.min(image)
+    max_valor = np.max(image)
+    T = (min_valor.astype(np.float64) + max_valor.astype(np.float64)) / 2.0
 
-    # Loop principal da iteração
-    while True:
-    # Segmentação de pixels com base no limiar atual
-        g = np.where(imagem_norm > T, 255, 0)
+    # Variável para controlar o loop
+    finish = False
 
-        # Cálculo das médias dos grupos G1 e G2
-        if m1 == 0:
-            m1 = np.mean(imagem_norm[g == 255])
-            m2 = np.mean(imagem_norm[g == 0])
-        else:
-            m1_novo = np.mean(imagem_norm[g == 255])
-            m2_novo = np.mean(imagem_norm[g == 0])
-            m1 = 0.5 * (m1 + m1_novo)
-            m2 = 0.5 * (m2 + m2_novo)
-    # Cálculo do novo valor de limiar
-        T_novo = 0.5 * (m1 + m2)
+    while not finish:
+        # Criando a imagem binária com o limiar atual
+        image_binary = image >= T
 
-        # Verificação da convergência
-        if np.abs(T_novo - T) < detT:
-            break
-        # Atualização do limiar para a próxima iteração
-        T = T_novo
-    return g
+        # Calculando a média das intensidades dos pixels brancos e pretos
+        mean_white = np.mean(image[image_binary])
+        mean_black = np.mean(image[~image_binary])
+
+        # Calculando o novo limiar
+        new_T = 0.5 * (mean_white + mean_black)
+
+        # Verificando se o limiar convergiu
+        diferency = np.abs(T - new_T)
+        finish = diferency < detT
+
+        # Atualizando o limiar
+        T = new_T
+    # Retornando a imagem binária final
+    return image_binary
 
 
 name_image = 'rice-shaded'
@@ -52,7 +52,7 @@ image_matrix = np.asarray(f_gray)
 image_matrix_original = image_matrix.copy()
 #transforms the matrix to an image object
 img = Image.fromarray(image_matrix_original)
-img.show()
+#img.show()
 
 g = globalThresh(image_matrix_original,0.01)
 #transforms the matrix to an image object
@@ -63,4 +63,4 @@ s.show()
 dpi_target = dpi_original
 
 #saves the resulting image with the mean-filtered image
-#s.save(name_image + '.tif', optimize=False, dpi=dpi_target)
+s.save(name_image + '_result_globalThresh'+'.tif', optimize=False, dpi=dpi_target)
